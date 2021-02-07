@@ -1,14 +1,14 @@
 <!--
  * @LastEditors: yym
  * @Date: 2021-02-04 11:36:45
- * @LastEditTime: 2021-02-07 16:07:06
+ * @LastEditTime: 2021-02-07 16:50:13
  * @Email: 15764302140@163.com
  * @Description: 内容
 -->
 <template>
   <div class="map-main">
-    <p class="title">&gt;&nbsp;{{ selectMenu | getMenu }}</p>
-    <location-info></location-info>
+    <p class="title">&gt; &nbsp; {{ selectMenu | getMenu }}</p>
+    <location-info :popupInfo="popupInfo" id="popup"></location-info>
     <div id="map" ref="rootmap"></div>
     <!-- <div id="popup" class="ol-popup">
       <a href="#" id="popup-closer" class="ol-popup-closer"></a>
@@ -73,18 +73,21 @@
 <script>
 import filters from '@/assets/js/filter';
 import {mapState} from 'vuex';
-import MyUI from './common';
 import mapconfig from '@/geoserver/mapconfig';
 import 'ol/ol.css';
-import {Map, View} from 'ol';
+import {Map, View, Overlay} from 'ol';
+
 // import {transform} from 'ol/proj'
 export default {
   filters: filters,
-  mixins: [MyUI],
   data() {
     return {
-      map: null,
-      view: null
+      map: null, // 地图对象
+      view: null, // 地图视图
+      popupInfo: {
+        // 点击位置信息
+        isPopup: false
+      }
     };
   },
   computed: {
@@ -122,14 +125,19 @@ export default {
      */
     getClickInfo() {
       const that = this;
-      // var container = document.getElementById('popup');
-      // var content = document.getElementById('popup-content');
-      // var popupCloser = document.getElementById('popup-closer');
-      // var overlay = new Overlay({
-      //   element: container,
-      //   autoPan: true
-      // });
+
       this.map.on('click', async function(e) {
+        var container = document.getElementById('popup');
+        console.log(container);
+        // var content = document.getElementById('popup-content');
+        // var popupCloser = document.getElementById('popup-closer');
+        var overlay = new Overlay({
+          element: container,
+          autoPan: true
+        });
+        that.$set(that.popupInfo, 'isPopup', true);
+        // that.popupInfo.isPopup = true;
+        console.log(that.popupInfo);
         // 获取点击geoserver数据
         let viewResolution = /** @type {number} */ (that.view.getResolution());
         let url = that.map
@@ -153,13 +161,16 @@ export default {
           try {
             let res = await that.axios.get(url);
             console.log(res);
-            for (let i = 0; i < res.data.features.length; i++) {
-              if (res.data.features[i].id.includes('roadnet')) {
-                that.roadnetInfo = res.data.features[i].properties;
-                // overlay.setPosition(e.coordinate_);
-                // that.map.addOverlay(overlay);
-              }
-            }
+            // for (let i = 0; i < res.data.features.length; i++) {
+            //   if (res.data.features[i].id.includes('roadnet')) {
+            //     that.roadnetInfo = res.data.features[i].properties;
+            //     overlay.setPosition(e.coordinate_);
+            //     that.map.addOverlay(overlay);
+            //   }
+            // }
+            console.log(e.coordinate, '\n', e.coordinate_);
+            overlay.setPosition(e.coordinate);
+            that.map.addOverlay(overlay);
             // console.log(res2.data);
           } catch (e) {
             console.log('error:', e);
