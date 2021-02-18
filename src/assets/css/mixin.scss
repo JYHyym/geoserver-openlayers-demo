@@ -42,3 +42,7 @@
   color: #3d414a;
   letter-spacing: 0.02rem;
 }
+
+@mixin  borderStyle {
+  border-bottom: 0.01rem solid #cccccc;
+}

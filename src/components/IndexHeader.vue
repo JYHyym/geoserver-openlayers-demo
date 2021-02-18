@@ -1,7 +1,7 @@
 <!--
  * @LastEditors: yym
  * @Date: 2021-02-04 11:36:06
- * @LastEditTime: 2021-02-05 15:35:26
+ * @LastEditTime: 2021-02-17 15:46:05
  * @Email: 15764302140@163.com
  * @Description: 头部
 -->
@@ -15,7 +15,7 @@
 <script>
 export default {
   data() {
-    return {}
+    return {};
   },
   methods: {
     /**
@@ -24,11 +24,11 @@ export default {
      * @return {*}
      */
     changeTheme(theme) {
-      window.document.documentElement.setAttribute('data-theme', theme)
+      window.document.documentElement.setAttribute('data-theme', theme);
     }
   },
   created() {}
-}
+};
 </script>
 
 <style lang="scss" scoped>

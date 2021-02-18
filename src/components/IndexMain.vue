@@ -1,90 +1,44 @@
 <!--
  * @LastEditors: yym
  * @Date: 2021-02-04 11:36:45
- * @LastEditTime: 2021-02-07 16:07:06
+ * @LastEditTime: 2021-02-18 19:12:50
  * @Email: 15764302140@163.com
  * @Description: 内容
 -->
 <template>
   <div class="map-main">
     <p class="title">&gt;&nbsp;{{ selectMenu | getMenu }}</p>
-    <location-info></location-info>
     <div id="map" ref="rootmap"></div>
-    <!-- <div id="popup" class="ol-popup">
-      <a href="#" id="popup-closer" class="ol-popup-closer"></a>
-      <div id="popup-title" class="popup-title">
-        通过能力瓶颈位置
+
+    <!-- 位置信息弹框 -->
+    <location-info id="popup" :popupInfo="popupInfo">
+      <div class="info" v-if="popupInfo.data && popupInfo.data.features && popupInfo.data.features.length > 0">
+        <ul v-for="(item, index) in popupInfo.data.features" :key="index" class="item-info">
+          <li v-for="(value, key, e) in item.properties" :key="e">
+            <label>{{ key }}:</label>&nbsp;
+            <span>{{ value }}</span>
+          </li>
+        </ul>
       </div>
-      <div id="popup-content" class="popup-content">
-        <div class="map-form-item">
-          <label class="map-label">所属时段：</label>
-          <el-input
-            v-model="mapInfo.timeRange"
-            disabled
-            class="map-input"
-          ></el-input>
-        </div>
-
-        <div class="map-form-item">
-          <label class="map-label">所属区间：</label>
-          <el-input
-            v-model="mapInfo.lineRange"
-            disabled
-            class="map-input"
-          ></el-input>
-        </div>
-
-        <div class="map-form-item">
-          <label class="map-label">非正常事件类型：</label>
-          <el-input
-            v-model="mapInfo.sceneType"
-            disabled
-            class="map-input"
-          ></el-input>
-        </div>
-
-        <div class="map-form-item">
-          <label class="map-label">通过能力值：</label>
-          <el-input
-            v-model="mapInfo.passPower"
-            disabled
-            class="map-input"
-          ></el-input>
-        </div>
-
-        <div class="map-button">
-          <el-button type="primary" style="height:28px" @click="exportInfo"
-            ><i class="el-icon-download"></i>&nbsp;导出</el-button
-          >
-          <el-button type="primary" style="height:28px" @click="uploadInfo"
-            ><i class="el-icon-refresh"></i>&nbsp;同步</el-button
-          >
-        </div>
-
-        <div
-          class="chart-number charts-set"
-          :id="`mapChartId${mapInfo.id}`"
-        ></div>
-      </div>
-    </div> -->
+    </location-info>
   </div>
 </template>
 
 <script>
 import filters from '@/assets/js/filter';
 import {mapState} from 'vuex';
-import MyUI from './common';
 import mapconfig from '@/geoserver/mapconfig';
-import 'ol/ol.css';
-import {Map, View} from 'ol';
+import {Map, View, Overlay} from 'ol';
 // import {transform} from 'ol/proj'
 export default {
   filters: filters,
-  mixins: [MyUI],
   data() {
     return {
       map: null,
-      view: null
+      view: null,
+      popupInfo: {
+        // 位置信息
+      }
     };
   },
   computed: {
@@ -92,13 +46,9 @@ export default {
       selectMenu: state => state.mapInfo.selectMenu
     })
   },
-  watch: {},
-
   methods: {
     /**
      * @name: 初始化地图
-     * @param {*}
-     * @return {*}
      */
     initMap() {
       this.view = new View({
@@ -111,24 +61,20 @@ export default {
         layers: mapconfig.streetmap(),
         view: this.view
       });
-
       this.getClickInfo();
     },
 
     /**
      * @name: 获取鼠标点击位置信息
-     * @param {*}
-     * @return {*}
      */
     getClickInfo() {
       const that = this;
-      // var container = document.getElementById('popup');
-      // var content = document.getElementById('popup-content');
-      // var popupCloser = document.getElementById('popup-closer');
-      // var overlay = new Overlay({
-      //   element: container,
-      //   autoPan: true
-      // });
+      let popupCloser = document.getElementById('popup-closer');
+      let container = document.getElementById('popup');
+      let overlay = new Overlay({
+        element: container,
+        autoPan: true
+      });
       this.map.on('click', async function(e) {
         // 获取点击geoserver数据
         let viewResolution = /** @type {number} */ (that.view.getResolution());
@@ -136,40 +82,27 @@ export default {
           .getLayers()
           .array_[0].getSource()
           .getFeatureInfoUrl(e.coordinate, viewResolution, 'EPSG:4326', {
-            INFO_FORMAT: 'application/json',
+            INFO_FORMAT: 'application/json', // 'text/html',
             FEATURE_COUNT: 50
           });
-        let url2 = that.map
-          .getLayers()
-          .array_[0].getSource()
-          .getFeatureInfoUrl(e.coordinate, viewResolution, 'EPSG:4326', {
-            INFO_FORMAT: 'text/html',
-            FEATURE_COUNT: 50
-          });
-        let res2 = await that.axios.get(url2);
-        console.log(res2);
 
+        // 请求地图数据
         if (url) {
           try {
             let res = await that.axios.get(url);
-            console.log(res);
-            for (let i = 0; i < res.data.features.length; i++) {
-              if (res.data.features[i].id.includes('roadnet')) {
-                that.roadnetInfo = res.data.features[i].properties;
-                // overlay.setPosition(e.coordinate_);
-                // that.map.addOverlay(overlay);
-              }
-            }
-            // console.log(res2.data);
+            that.popupInfo = res;
+            overlay.setPosition(e.coordinate_);
+            that.map.addOverlay(overlay);
           } catch (e) {
             console.log('error:', e);
           }
         }
       });
 
-      // popupCloser.addEventListener('click', function() {
-      //   overlay.setPosition(undefined);
-      // });
+      // 隐藏位置信息弹框
+      popupCloser.addEventListener('click', function() {
+        overlay.setPosition(undefined);
+      });
 
       //设置icon
       //创建空的矢量容器(point)
@@ -229,6 +162,20 @@ export default {
     position: absolute;
     height: calc(100vh - 1rem);
     width: 100%;
+
+    .info {
+      height: 2rem;
+      overflow-y: scroll;
+
+      .item-info {
+        @include borderStyle;
+        margin: 0.1rem 0.2rem 0 0.1rem;
+
+        label {
+          font-weight: 600;
+        }
+      }
+    }
   }
 }
 </style>

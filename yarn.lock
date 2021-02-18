@@ -7034,7 +7034,7 @@ promise-inflight@^1.0.1:
 
 protocol-buffers-schema@^3.3.1:
   version "3.5.1"
-  resolved "https://registry.npm.taobao.org/protocol-buffers-schema/download/protocol-buffers-schema-3.5.1.tgz?cache=0&sync_timestamp=1611416605372&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fprotocol-buffers-schema%2Fdownload%2Fprotocol-buffers-schema-3.5.1.tgz#8388e768d383ac8cbea23e1280dfadb79f4122ad"
+  resolved "https://registry.npm.taobao.org/protocol-buffers-schema/download/protocol-buffers-schema-3.5.1.tgz#8388e768d383ac8cbea23e1280dfadb79f4122ad"
   integrity sha1-g4jnaNODrIy+oj4SgN+tt59BIq0=
 
 proxy-addr@~2.0.5:

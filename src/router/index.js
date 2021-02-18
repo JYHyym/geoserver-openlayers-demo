@@ -5,12 +5,12 @@
  * @Email: 15764302140@163.com
  * @Description:
  */
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import '@/views/Index'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import '@/views/Index';
 // import Home from '../views/Home.vue'
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
@@ -18,10 +18,10 @@ const routes = [
     component: () => import(/* webpackChunkName: "home" */ '@/views/Index.vue'),
     meta: {title: '首页'}
   }
-]
+];
 
 const router = new VueRouter({
   routes
-})
+});
 
-export default router
+export default router;
