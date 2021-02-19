@@ -4,7 +4,7 @@
  * @Author: zhuLi
  * @Date: 2020-09-08 09:49:52
  * @LastEditors: yym
- * @LastEditTime: 2021-02-18 21:31:25
+ * @LastEditTime: 2021-02-19 15:52:00
  */
 import TileLayer from 'ol/layer/Tile';
 import TileArcGISRest from 'ol/source/TileArcGISRest';
@@ -40,7 +40,7 @@ var streetmap = function() {
     case 3:
       maplayer = new Image({
         source: new ImageWMS({
-          url: '/map/geoserver/wms', //geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=topp%3Astates&TILED=true&WIDTH=256&HEIGHT=256&CRS=EPSG%3A4326&STYLES=&BBOX=33.75%2C-146.25%2C45%2C-135
+          url: '/map/geoserver/wms', //https://ahocevar.com/geoserver/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&FORMAT=image%2Fpng&TRANSPARENT=true&LAYERS=topp%3Astates&TILED=true&WIDTH=256&HEIGHT=256&CRS=EPSG%3A4326&STYLES=&BBOX=33.75%2C-146.25%2C45%2C-135
           ratio: 1,
           params: {
             LAYERS: 'topp:states', // geoserver配置的layers名称，一定要改！！！
