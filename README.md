@@ -26,6 +26,4 @@ yarn build
 yarn lint
 ```
 
-### Customize configuration
-
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![暂无图片展示](https://github.com/JYHyym/geoserver-openlayers-demo/blob/main/src/assets/showContent.png)
